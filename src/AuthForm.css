@@ -1,14 +1,15 @@
 
-body {
+
+.loginpage {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: cornflowerblue;
+    background-color: cornflowerblue !important ;
     }
-
+  
     .welcome h1{
       font-family:monospace;
       font-size: 35px;
@@ -101,6 +102,10 @@ body {
   
   .form p {
     text-align: center;
+  }
+
+  .errors_font{
+    color: red;
   }
   
   

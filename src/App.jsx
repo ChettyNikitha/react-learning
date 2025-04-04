@@ -1,6 +1,8 @@
 import React from 'react';
 
 import AuthForm from './AuthForm.jsx';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Homepageview from './view/homepageview.jsx';
 
 
 
@@ -13,7 +15,13 @@ function App() {
     <div id="app"  >
 
 
-      <AuthForm />
+      
+      <Router>
+        <Routes>
+        <Route path="/" element={<AuthForm/>} />
+        <Route path="/home" element={<Homepageview />} />
+        </Routes>
+      </Router>
 
 
 
