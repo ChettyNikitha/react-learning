@@ -24,8 +24,9 @@ export default async function handleLogin(email,password, error, setError, navig
     }
     else{
         setError((error) => ({...error,password:""}));
-        navigate('/home');
+        
     }
+    navigate('/home');
    // ✅ Call Azure Function to store user email
   try {
     const response = await fetch('/api/saveUserData', {
