@@ -24,7 +24,7 @@ export default async function handleLogin(email,password, error, setError, navig
     }
     else{
         setError((error) => ({...error,password:""}));
-        
+        navigate('/home');
     }
    // ✅ Call Azure Function to store user email
   try {
@@ -40,7 +40,5 @@ export default async function handleLogin(email,password, error, setError, navig
     console.error("Error calling Azure Function:", err);
   }
 
-  // ✅ Navigate to home page after everything succeeds
-  navigate('/home');
-
+  
 }
