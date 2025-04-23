@@ -3,7 +3,7 @@ import { useState } from "react";
 
 
 
-export default function handleLogin(email,password, error, setError, navigate){
+export default async function handleLogin(email,password, error, setError, navigate){
     
 
     if(email.trim()=== "" ){
@@ -24,7 +24,23 @@ export default function handleLogin(email,password, error, setError, navigate){
     }
     else{
         setError((error) => ({...error,password:""}));
-        navigate('/home');
+        
     }
+   // ✅ Call Azure Function to store user email
+  try {
+    const response = await fetch('/api/saveUserData', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+
+    const result = await response.text();
+    console.log("Azure Function response:", result);
+  } catch (err) {
+    console.error("Error calling Azure Function:", err);
+  }
+
+  // ✅ Navigate to home page after everything succeeds
+  navigate('/home');
 
 }
