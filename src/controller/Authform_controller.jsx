@@ -99,11 +99,12 @@ export async function handleSignup(
 
   // Signup API call
   try {
-    const response = await fetch("/api/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: signupEmail, password: signupPassword }),
-    });
+    const response = await fetch('http://localhost:7071/api/signup', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email: signupEmail, password: signupPassword }),
+});
+
 
     const data = await response.text();
     console.log("Signup response:", data);
