@@ -3,7 +3,7 @@ import { useState } from "react";
 
 
 
-export default async function handleLogin(email,password, error, setError, navigate){
+export  async function handleLogin(email,password, error, setError, navigate){
   let hasError = false;
 
     if(email.trim()=== "" ){
@@ -50,4 +50,65 @@ export default async function handleLogin(email,password, error, setError, navig
   }
 
   
+}
+// controller/Authform_signup_controller.jsx
+export async function handleSignup(
+  e,
+  signupEmail,
+  signupPassword,
+  confirmPassword,
+  setError,
+  navigate
+) {
+  e.preventDefault();
+
+  let hasError = false;
+
+  // Email validation
+  if (signupEmail.trim() === "") {
+    setError((prev) => ({ ...prev, email: "Enter email address" }));
+    hasError = true;
+  } else if (!signupEmail.includes("@")) {
+    setError((prev) => ({ ...prev, email: "Enter valid email address" }));
+    hasError = true;
+  } else {
+    setError((prev) => ({ ...prev, email: "" }));
+  }
+
+  // Password validation
+  if (signupPassword.trim() === "") {
+    setError((prev) => ({ ...prev, password: "Enter password!" }));
+    hasError = true;
+  } else if (signupPassword.trim().length < 6) {
+    setError((prev) => ({
+      ...prev,
+      password: "Password must be at least 6 characters!",
+    }));
+    hasError = true;
+  } else if (signupPassword !== confirmPassword) {
+    setError((prev) => ({
+      ...prev,
+      password: "Passwords do not match",
+    }));
+    hasError = true;
+  } else {
+    setError((prev) => ({ ...prev, password: "" }));
+  }
+
+  if (hasError) return;
+
+  // Signup API call
+  try {
+    const response = await fetch("/api/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: signupEmail, password: signupPassword }),
+    });
+
+    const data = await response.text();
+    console.log("Signup response:", data);
+    navigate("/home");
+  } catch (err) {
+    console.error("Signup error:", err);
+  }
 }

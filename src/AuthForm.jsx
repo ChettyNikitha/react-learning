@@ -1,6 +1,6 @@
 import React, {  useState } from "react";
 import { useNavigate } from "react-router-dom";
-import handleLogin from "./controller/Authform_controller.jsx";
+import {handleLogin,handleSignup} from "./controller/Authform_controller.jsx";
 import './AuthForm.css';
 
 
@@ -32,28 +32,7 @@ export default function AuthForm() {
     console.log("pwd:", password);
       };
       document.body.style.backgroundColor = "cornflowerblue";
-      const handleSignup = async (e) => {
-        e.preventDefault();
       
-        if (signupPassword !== confirmPassword) {
-          setError((prev) => ({ ...prev, password: "Passwords do not match" }));
-          return;
-        }
-      
-        try {
-          const response = await fetch('/api/signup', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: signupEmail, password: signupPassword }),
-          });
-      
-          const data = await response.text();
-          console.log("Signup response:", data);
-          navigate('/home'); // Redirect on success
-        } catch (err) {
-          console.error("Signup error:", err);
-        }
-      };
       
 
     return (
@@ -114,19 +93,27 @@ export default function AuthForm() {
   value={signupEmail}
   onChange={(e) => setSignupEmail(e.target.value)}
 />
+{/* if there are any errors related to email property then show that email error */}
+{error.email && <span className="errors_font">{error.email}</span>}
 <input
   type="password"
   placeholder="Password"
   value={signupPassword}
   onChange={(e) => setSignupPassword(e.target.value)}
+   
 />
+{error.password && <span className="errors_font" >{error.password}</span>}
+
 <input
   type="password"
   placeholder="Confirm Password"
   value={confirmPassword}
   onChange={(e) => setConfirmPassword(e.target.value)}
 />
-<button onClick={handleSignup}>Sign Up</button>
+{error.password && <span className="errors_font" >{error.password}</span>}
+<button onClick={(e) => handleSignup(e, signupEmail, signupPassword, confirmPassword, setError, navigate)}>
+  Sign Up
+</button>
 
                             </div>
                         </>}
