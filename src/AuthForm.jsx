@@ -15,6 +15,10 @@ export default function AuthForm() {
     const [email, setEmail] = useState('');
     //using UseRef uncontrolled data handle way
     const [password, setPassword] = useState('');
+    //adding usestate for signup form data variables we are using this sepeartely from above usestate bcuz to keep clear of data in each login n signup form
+    const [signupEmail, setSignupEmail] = useState('');
+   const [signupPassword, setSignupPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
     const [error,setError] = useState({
         email: "",
@@ -28,6 +32,29 @@ export default function AuthForm() {
     console.log("pwd:", password);
       };
       document.body.style.backgroundColor = "cornflowerblue";
+      const handleSignup = async (e) => {
+        e.preventDefault();
+      
+        if (signupPassword !== confirmPassword) {
+          setError((prev) => ({ ...prev, password: "Passwords do not match" }));
+          return;
+        }
+      
+        try {
+          const response = await fetch('/api/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: signupEmail, password: signupPassword }),
+          });
+      
+          const data = await response.text();
+          console.log("Signup response:", data);
+          navigate('/home'); // Redirect on success
+        } catch (err) {
+          console.error("Signup error:", err);
+        }
+      };
+      
 
     return (
       
@@ -81,10 +108,25 @@ export default function AuthForm() {
                         </> : <>
                             <div className="form">
                                 <h2>SignUP Form</h2>
-                                <input type="email" placeholder="Email" />
-                                <input type="password" placeholder="Password" />
-                                <input type="password" placeholder="Confirm Password" />
-                                <button>SignUp</button>
+                                <input
+  type="email"
+  placeholder="Email"
+  value={signupEmail}
+  onChange={(e) => setSignupEmail(e.target.value)}
+/>
+<input
+  type="password"
+  placeholder="Password"
+  value={signupPassword}
+  onChange={(e) => setSignupPassword(e.target.value)}
+/>
+<input
+  type="password"
+  placeholder="Confirm Password"
+  value={confirmPassword}
+  onChange={(e) => setConfirmPassword(e.target.value)}
+/>
+<button onClick={handleSignup}>Sign Up</button>
 
                             </div>
                         </>}
