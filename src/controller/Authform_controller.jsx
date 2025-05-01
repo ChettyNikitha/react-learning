@@ -97,19 +97,32 @@ export async function handleSignup(
 
   if (hasError) return;
 
-  // Signup API call
+  // Signup API call to store user data in the backend
   try {
-    const response = await fetch('http://localhost:7071/api/signup', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ email: signupEmail, password: signupPassword }),
-});
+    const response = await fetch("http://localhost:5000/api/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: signupEmail, password: signupPassword }),
+    });
 
 
-    const data = await response.text();
-    console.log("Signup response:", data);
-    navigate("/home");
+    const data = await response.json(); // The backend responds with JSON
+console.log("User signup response:", data);
+
+if (response.ok) {
+  navigate("/home"); // success
+} else if (response.status === 409) {
+  // Email already exists
+  setError((prev) => ({
+    ...prev,
+    email: "Email already exists. Want to sign in or use a different email?",
+  }));
+} else {
+  setError((prev) => ({ ...prev, email: "Error signing up!" }));
+}
+
   } catch (err) {
     console.error("Signup error:", err);
+    setError((prev) => ({ ...prev, email: "Error signing up!" }));
   }
 }
