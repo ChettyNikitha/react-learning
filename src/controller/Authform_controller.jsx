@@ -3,54 +3,100 @@ import { useState } from "react";
 
 
 
-export  async function handleLogin(email,password, error, setError, navigate){
-  let hasError = false;
+// export  async function handleLogin(email,password, error, setError, navigate){
+//   let hasError = false;
 
-    if(email.trim()=== "" ){
-        setError( (error)=> ({...error,email:"Enter email address"}));
-        hasError = true;
-    }
-    else if(!email.includes('@')){
-        setError( (error) => ({...error,email:"Enter valid email address"}));
-        hasError = true;
-    }
-    else{
-        setError( (error) => ({...error,email:""}));
-    }
-    if(password.trim()=== "" ){
-        setError( (error) => ({...error,password:"Enter password!"}));
-        hasError = true;
-    }
+//     if(email.trim()=== "" ){
+//         setError( (error)=> ({...error,email:"Enter email address"}));
+//         hasError = true;
+//     }
+//     else if(!email.includes('@')){
+//         setError( (error) => ({...error,email:"Enter valid email address"}));
+//         hasError = true;
+//     }
+//     else{
+//         setError( (error) => ({...error,email:""}));
+//     }
+//     if(password.trim()=== "" ){
+//         setError( (error) => ({...error,password:"Enter password!"}));
+//         hasError = true;
+//     }
     
-    else if(password.trim().length<6){
-        setError( (error) =>({...error,password:"Password must be atleast 6 characters!"}));
-        hasError = true;
-    }
-    else{
-        setError((error) => ({...error,password:""}));
+//     else if(password.trim().length<6){
+//         setError( (error) =>({...error,password:"Password must be atleast 6 characters!"}));
+//         hasError = true;
+//     }
+//     else{
+//         setError((error) => ({...error,password:""}));
         
-    }
-    if (hasError) {
-      return; // Don't proceed if there are any validation errors
-    }
+//     }
+//     if (hasError) {
+//       return; // Don't proceed if there are any validation errors
+//     }
    
-   //  Calling Azure Function to store user email
-  try {
-    const response = await fetch('/api/saveUserData', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
-    });
+//    //  Calling Azure Function to store user email
+//   try {
+//     const response = await fetch('/api/saveUserData', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ email })
+//     });
 
-    const result = await response.text();
-    console.log("Azure Function response:", result);
-    navigate('/home');
-  } catch (err) {
-    console.error("Error calling Azure Function:", err);
-  }
+//     const result = await response.text();
+//     console.log("Azure Function response:", result);
+//     navigate('/home');
+//   } catch (err) {
+//     console.error("Error calling Azure Function:", err);
+//   }
 
   
+// }
+export async function handleLogin(email, password, error, setError, navigate) {
+  let hasError = false;
+
+  if (email.trim() === "") {
+    setError((err) => ({ ...err, email: "Enter email address" }));
+    hasError = true;
+  } else if (!email.includes("@")) {
+    setError((err) => ({ ...err, email: "Enter valid email address" }));
+    hasError = true;
+  } else {
+    setError((err) => ({ ...err, email: "" }));
+  }
+
+  if (password.trim() === "") {
+    setError((err) => ({ ...err, password: "Enter password!" }));
+    hasError = true;
+  } else if (password.length < 6) {
+    setError((err) => ({ ...err, password: "Password must be at least 6 characters!" }));
+    hasError = true;
+  } else {
+    setError((err) => ({ ...err, password: "" }));
+  }
+
+  if (hasError) return;
+
+  try {
+    const response = await fetch("http://localhost:5000/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+    console.log("Login response:", data);
+
+    if (response.ok) {
+      navigate("/home");
+    } else {
+      setError((err) => ({ ...err, password: "Invalid email or password" }));
+    }
+  } catch (err) {
+    console.error("Login error:", err);
+    setError((err) => ({ ...err, password: "Server error, try again later" }));
+  }
 }
+
 // controller/Authform_signup_controller.jsx
 export async function handleSignup(
   e,

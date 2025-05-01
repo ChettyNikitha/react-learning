@@ -35,6 +35,20 @@ app.get("/api/users", (req, res) => {
     res.send(results);
   });
 });
+app.post("/api/login", (req, res) => {
+  const { email, password } = req.body;
+
+  const query = "SELECT * FROM users WHERE email = ? AND password = ?";
+  db.query(query, [email, password], (err, results) => {
+    if (err) return res.status(500).send({ error: "Database error" });
+
+    if (results.length > 0) {
+      res.send({ message: "Login successful", user: results[0] });
+    } else {
+      res.status(401).send({ error: "Invalid email or password" }); // Unauthorized
+    }
+  });
+});
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(` Server running on http://localhost:${PORT}`));
