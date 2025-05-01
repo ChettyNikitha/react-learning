@@ -4,9 +4,11 @@ import pieimage from '../assets/chart-50-30-20-budget.jpg';
 import yourselfimage from '../assets/yourfirst.png';
 import zeroimage from '../assets/zerobudgetimage.png';
 import ownimage from '../assets/ownimage.jpg';
+import { useNavigate } from "react-router-dom";
 
 
 export default function BudgetStrategySelectionCards(){
+    const navigateto = useNavigate();
     const [budgetStrategyCards] = useState([
         {
             title: '1. The 50/20/30 Budget ', 
@@ -44,14 +46,23 @@ export default function BudgetStrategySelectionCards(){
 
         },
     ]);
+    // Function to handle logout
+    const handleLogout = () => {
+        // Redirect to "/home" page on logout
+        navigateto("/");
+    };
+
 
     return(
-        <div className="card-container " >
-            {
-              budgetStrategyCards.map((budgetStrategyCards,index) => (
-                <div key={index}  className="card">
+        <>
+        <div>
+        <button onClick={handleLogout} className="LogoutButton" >Logout</button>
+        </div>
+        <div className="card-container ">
+            {budgetStrategyCards.map((budgetStrategyCards, index) => (
+                <div key={index} className="card">
                     <h3>
-                                {budgetStrategyCards.title}
+                        {budgetStrategyCards.title}
                     </h3>
                     <img src={budgetStrategyCards.image} className="card-img"></img>
 
@@ -60,9 +71,11 @@ export default function BudgetStrategySelectionCards(){
                         <br></br>
                     </p>
                 </div>
-              )
-            )} 
+            )
+            )}
         </div>
+        </>
+        
     
     );
 
