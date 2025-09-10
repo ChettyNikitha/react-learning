@@ -29,13 +29,13 @@
     display: flex;
     flex-wrap: wrap; /* Ensures responsiveness */
     justify-content: space-between; /* Adjusts spacing */
-    gap: 10px; /* Space between cards */
+    gap: 20px; /* Space between cards */
     padding: 20px;
  }
 .card{
     
-   flex: 0 0 calc(25% - 20px);   /* 4 cards in a row */
-   max-width: calc(25% - 20px);
+   flex: 0 0 calc(33.33% - 20px);
+   max-width: calc(22.22% - 20px);
    width: 100%;
    background-color: rgb(245, 245, 245);
    border-radius: 10px;
@@ -44,7 +44,6 @@
    border-color: whitesmoke;
    transition: .3s;
    border: 2px solid transparent;
-   cursor: pointer;
 }
 
 .card:hover{
