@@ -52,15 +52,7 @@ export default function BudgetStrategySelectionCards(){
              path: "/build_your_own_strategy",
 
         },
-        {
-            title: '  4. Build Your Own ', 
-            text: `You can build your new strategy ,
-                   if the above doesn't works ! 
-                   `,
-            image: ownimage,
-             path: "/build_your_own_strategy",
-
-        },
+        
     ]);
     // Function to handle logout
     const handleLogout = () => {
