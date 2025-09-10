@@ -3,7 +3,7 @@
 
 import express from "express";
 import cors from "cors";
-import db from "./database.js"; // ✅ Correct ES6 import
+import db from "./database.js"; 
 
 const app = express();
 app.use(cors());

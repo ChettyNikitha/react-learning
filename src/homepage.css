@@ -34,8 +34,8 @@
  }
 .card{
     
-   flex: 0 0 calc(33.33% - 20px);
-   max-width: calc(22.22% - 20px);
+   flex: 0 0 calc(25% - 20px);   /* 4 cards in a row */
+   max-width: calc(25% - 20px);
    width: 100%;
    background-color: rgb(245, 245, 245);
    border-radius: 10px;
@@ -44,6 +44,8 @@
    border-color: whitesmoke;
    transition: .3s;
    border: 2px solid transparent;
+   cursor: pointer;
+   
 }
 
 .card:hover{
@@ -57,8 +59,19 @@
     object-fit: cover;
     border-radius: 10px;
     margin-bottom: 15px;
+    pointer-events: none;
 }
 
+.card-button {
+  flex: 0 0 calc(25% - 20px);
+  background: #f5f5f5;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  padding: 20px;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.3s;
+}
 .LogoutButton{
   position: absolute;
   top: 10px;
