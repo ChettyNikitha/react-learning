@@ -69,13 +69,13 @@ export default function BudgetStrategySelectionCards(){
         <div className="card-container ">
             {budgetStrategyCards.map((budgetStrategyCard, index) => (
                 <div key={index}
-                className="card-button"
+               
                 onClick={() =>{
                     console.log("Navigating to:", budgetStrategyCard.path);
                 
                      navigateto(budgetStrategyCard.path)
                 }}
-                 //className="card"
+                 className="card"
                
             //style={{ cursor: index === 0 ? "pointer" : "default" }}
                 >
