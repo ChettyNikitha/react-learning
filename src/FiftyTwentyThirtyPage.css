@@ -1,0 +1,74 @@
+.fifty-page {
+  min-height: 100vh;               /* full screen height */
+  width: 100%;
+  background-size: cover;          /* stretch to cover full page */
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Light overlay on background */
+.fifty-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8); /* make image very light */
+  z-index: 0;
+}
+
+/* Full-width heading bar */
+.page-heading {
+  width: 100%;
+  background-color: orange;
+  color: white;
+  text-align: center;
+  padding: 25;
+  font-size: 2rem;
+  font-weight: bold;
+  position: relative;
+  z-index: 2;  /* keeps above background */
+}
+.page-container {
+  min-height: 100vh;
+  background: url("/502030-pie.png") no-repeat center center/cover;
+}
+/* Slide down animation */
+@keyframes slideDown {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Content block */
+.overlay {
+  position: relative;
+  z-index: 2;
+  margin-top: 60px;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  text-align: center;
+  color: #333;
+  max-width: 800px;
+}
+.fifty-description {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9); /* light tile */
+  color: #333;
+  padding: 10;
+  text-align: center;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  /* margin-top: 0rem;  */
+  z-index: 2;
+  position: relative;
+}
+
