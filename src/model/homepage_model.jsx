@@ -56,8 +56,9 @@ export default function BudgetStrategySelectionCards(){
     ]);
     // Function to handle logout
     const handleLogout = () => {
+        localStorage.removeItem("user");
         // Redirect to "/home" page on logout
-        navigateto("/");
+        navigateto("/", { replace: true });
     };
 
 

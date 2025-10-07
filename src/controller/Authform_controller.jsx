@@ -40,7 +40,9 @@ export async function handleLogin(email, password, error, setError, navigate) {
     console.log("Login response:", data);
 
     if (response.ok) {
-      navigate("/home");
+      // store user info in localStorage
+  localStorage.setItem("user", JSON.stringify({ email }));
+      navigate("/home", { replace: true });
     } else {
       setError((err) => ({ ...err, password: "Invalid email or password" }));
     }
@@ -109,7 +111,8 @@ export async function handleSignup(
 console.log("User signup response:", data);
 
 if (response.ok) {
-  navigate("/home"); // success
+   localStorage.setItem("user", JSON.stringify({ email: signupEmail }));
+  navigate("/home", { replace: true }); // success
 } else if (response.status === 409) {
   // Email already exists
   setError((prev) => ({
