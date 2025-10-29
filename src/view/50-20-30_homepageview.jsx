@@ -1,246 +1,105 @@
 
-
-// import React, { useState } from "react";
-// import pieimage from "../assets/chart-50-30-20-budget.jpg";
-// import "../FiftyTwentyThirtyPage.css";
-
-// export default function FiftyTwentyThirtyPage() {
-//   const [formData, setFormData] = useState({
-//     salary: "",
-//     rent: "",
-//     utilities: "",
-//     groceries: "",
-//     vehicleInsurance: "",
-//     personalInsurance: "",
-//   });
-
-//   const [results, setResults] = useState({ needs: 0, savings: 0, wants: 0 });
-//   const [paystubFile, setPaystubFile] = useState(null);
-//   const [billsFile, setBillsFile] = useState(null);
-  
-
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData({ ...formData, [name]: value });
-//   };
-
-//   const handleFileUpload = (e, type) => {
-//     if (type === "paystub") setPaystubFile(e.target.files[0]);
-//     if (type === "bills") setBillsFile(e.target.files[0]);
-//   };
-
-//   const handleCalculate = () => {
-//     const salary = parseFloat(formData.salary) || 0;
-//     const needs = salary * 0.5;
-//     const savings = salary * 0.2;
-//     const wants = salary * 0.3;
-//     setResults({ needs, savings, wants });
-//   };
-
-//   const handleClear = () => {
-//     setFormData({
-//       salary: "",
-//       rent: "",
-//       utilities: "",
-//       groceries: "",
-//       vehicleInsurance: "",
-//       personalInsurance: "",
-//     });
-//     setResults({ needs: 0, savings: 0, wants: 0 });
-//     setPaystubFile(null);
-//     setBillsFile(null);
-//   };
-
-//   return (
-//     <div className="fifty-page" style={{ backgroundImage: `url(${pieimage})` }}>
-//       <h1 className="page-heading">50/20/30 Budget Strategy</h1>
-//       <div className="fifty-description">
-//           <p>
-//             The <strong>50-20-30 rule</strong> is a simple budgeting strategy:
-//             spend <strong>50%</strong> on needs, <strong>20%</strong> on savings,
-//             and <strong>30%</strong> on wants.
-//           </p>
-//         </div>
-//       <div className="page-container">
-//          <form className="budget-form">
-//           <div className="form-group">
-//             <label>Your Salary After Tax ($):</label>
-//             <input
-//               type="number"
-//               name="salary"
-//               value={formData.salary}
-//               onChange={handleChange}
-//               placeholder="Enter your salary"
-//             />
-//           </div>
-
-//           <div className="form-group">
-//             <label>Needs</label>
-//             <input
-//               type="number"
-//               name="rent"
-//               value={formData.rent}
-//               onChange={handleChange}
-//               placeholder="Rent"
-//             />
-//             <input
-//               type="number"
-//               name="utilities"
-//               value={formData.utilities}
-//               onChange={handleChange}
-//               placeholder="Utilities"
-//             />
-//             <input
-//               type="number"
-//               name="groceries"
-//               value={formData.groceries}
-//               onChange={handleChange}
-//               placeholder="Groceries"
-//             />
-//             <input
-//               type="number"
-//               name="vehicleInsurance"
-//               value={formData.vehicleInsurance}
-//               onChange={handleChange}
-//               placeholder="Vehicle Insurance"
-//             />
-//             <input
-//               type="number"
-//               name="personalInsurance"
-//               value={formData.personalInsurance}
-//               onChange={handleChange}
-//               placeholder="Family / Personal Insurance"
-//             />
-//           </div>
-
-//           <div className="form-group">
-//             <label>Upload Paystub:</label>
-//             <input
-//               type="file"
-//               onChange={(e) => handleFileUpload(e, "paystub")}
-//               accept=".jpg,.jpeg,.png,.pdf"
-//             />
-//           </div>
-
-//           <div className="form-group">
-//             <label>Upload Bills:</label>
-//             <input
-//               type="file"
-//               onChange={(e) => handleFileUpload(e, "bills")}
-//               accept=".jpg,.jpeg,.png,.pdf"
-//             />
-//           </div>
-
-//           <div className="button-group">
-//             <button type="button" onClick={handleCalculate}>
-//               Calculate
-//             </button>
-//             <button type="button" onClick={handleClear}>
-//               Clear
-//             </button>
-//           </div>
-//         </form>
-
-//         <div className="results">
-//           <h3>Results:</h3>
-//           <p>Needs (50%): ${results.needs.toFixed(2)}</p>
-//           <p>Savings (20%): ${results.savings.toFixed(2)}</p>
-//           <p>Wants (30%): ${results.wants.toFixed(2)}</p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
 import React, { useState } from "react";
-import pieimage from "../assets/chart-50-30-20-budget.jpg";
 import "../FiftyTwentyThirtyPage.css";
-import { extractSalaryFromPaystubFile } from "../controller/paystubextraction.jsx";
+import pieimage from "../assets/chart-50-30-20-budget.jpg";
 
+import * as Model from "../model/502030Model.jsx";
 
-export default function FiftyTwentyThirtyPage() {
-  const [formData, setFormData] = useState({
-    salary: "",
+export default function FiftyTwentyThirtyView() {
+  const [salary, setSalary] = useState("");
+  const [paystubFile, setPaystubFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const [needs, setNeeds] = useState({
     rent: "",
     utilities: "",
     groceries: "",
     vehicleInsurance: "",
-    personalInsurance: "",
+    personalInsurance: ""
   });
 
-  const [results, setResults] = useState({ needs: 0, savings: 0, wants: 0 });
-  const [paystubFile, setPaystubFile] = useState(null);
-  const [billsFile, setBillsFile] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [wants, setWants] = useState({
+    entertainment: "",
+    shopping: "",
+    dining: ""
+  });
 
-  // Handle text input change
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const [savings, setSavings] = useState({
+    investments: "",
+    emergencyFund: ""
+  });
+
+  const [results, setResults] = useState({
+    salary50: 0,
+    salary20: 0,
+    salary30: 0,
+    needsTotal: 0,
+    wantsTotal: 0,
+    savingsTotal: 0
+  });
+
+  const [comparison, setComparison] = useState({
+    needs: "",
+    wants: "",
+    savings: ""
+  });
+
+  // =========================
+  // Handlers
+  // =========================
+  const handleSalaryChange = (e) => setSalary(e.target.value);
+
+  const handlePaystubUpload = (e) => {
+    const file = e.target.files[0];
+    setPaystubFile(file);
+    Model.handlePaystub(file, setSalary, setLoading);
   };
 
-  // Handle file upload (Paystub or Bills)
-  const handleFileUpload = async (e, type) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleInputChange = (e, type) => {
+    const { name, value } = e.target;
+    if (type === "needs") setNeeds({ ...needs, [name]: value });
+    if (type === "wants") setWants({ ...wants, [name]: value });
+    if (type === "savings") setSavings({ ...savings, [name]: value });
+  };
 
-    if (type === "paystub") {
-      setPaystubFile(file);
-      setLoading(true);
+  // =========================
+  // Calculate Salary Percentages
+  // =========================
+  const calculateSalary = () => {
+    const salResults = Model.calculateSalaryPercentages(salary);
+    setResults((prev) => ({ ...prev, ...salResults }));
+  };
 
-      try {
-        
+  // =========================
+  // Calculate Section Totals
+  // =========================
+  const calculateSection = (type) => {
+    let actual = 0, ideal = 0;
 
-// Then in handleFileUpload:
-const extractedSalary = await extractSalaryFromPaystubFile(file);
-if (extractedSalary) {
-  setFormData((prev) => ({
-    ...prev,
-    salary: extractedSalary,
-  }));
-  alert(`Salary extracted: $${extractedSalary}`);
-} else {
-  alert("Could not detect a salary in the paystub.");
-}
-
-        
-      } catch (err) {
-        console.error("Error extracting salary:", err);
-        alert("Error extracting salary. Try another file.");
-      } finally {
-        setLoading(false);
-      }
+    if (type === "needs") {
+      actual = Model.calculateTotal(needs);
+      ideal = results.salary50;
     }
 
-    if (type === "bills") setBillsFile(file);
-  };
+    if (type === "wants") {
+      actual = Model.calculateTotal(wants);
+      ideal = results.salary30;
+    }
 
-  // Calculate based on salary input
-  const handleCalculate = () => {
-    const salary = parseFloat(formData.salary) || 0;
-    const needs = salary * 0.5;
-    const savings = salary * 0.2;
-    const wants = salary * 0.3;
-    setResults({ needs, savings, wants });
-  };
+    if (type === "savings") {
+      actual = Model.calculateTotal(savings);
+      ideal = results.salary20;
+    }
 
-  // Clear all inputs and results
-  const handleClear = () => {
-    setFormData({
-      salary: "",
-      rent: "",
-      utilities: "",
-      groceries: "",
-      vehicleInsurance: "",
-      personalInsurance: "",
-    });
-    setResults({ needs: 0, savings: 0, wants: 0 });
-    setPaystubFile(null);
-    setBillsFile(null);
+    const cmp = Model.compareWithIdeal(actual, ideal);
+    setResults((prev) => ({ ...prev, [`${type}Total`]: actual }));
+    setComparison((prev) => ({ ...prev, [type]: cmp }));
   };
 
   return (
-    <div className="fifty-page" style={{ backgroundImage: `url(${pieimage})` }}>
+    // <div className="fifty-page">
+
+      <div className="fifty-page" style={{ backgroundImage: `url(${pieimage})` }}>
       <h1 className="page-heading">50/20/30 Budget Strategy</h1>
 
       <div className="fifty-description">
@@ -250,56 +109,99 @@ if (extractedSalary) {
           savings, and <strong>30%</strong> wants.
         </p>
       </div>
+      <div className="row-section">
+        <input
+          type="number"
+          value={salary}
+          onChange={handleSalaryChange}
+          placeholder="Enter Salary"
+        />
 
-      <div className="page-container">
-        <form className="budget-form">
-          <div className="form-group">
-            <label>Your Salary After Tax ($):</label>
-            <input
-              type="number"
-              name="salary"
-              value={formData.salary}
-              onChange={handleChange}
-              placeholder="Enter your salary"
-            />
-          </div>
+  <div className="file-upload-container">
+  <label className="custom-file-btn">
+    Upload Paystub
+    <input
+      type="file"
+      onChange={handlePaystubUpload}
+      accept=".pdf,.txt,.jpg,.png"
+    />
+  </label>
+  <span className="file-name">
+    {paystubFile ? paystubFile.name : "No file chosen"}
+  </span>
+</div>
 
-          <div className="form-group">
-            <label>Upload Paystub:</label>
-            <input
-              type="file"
-              onChange={(e) => handleFileUpload(e, "paystub")}
-              accept=".txt,.pdf,.jpg,.jpeg,.png"
-            />
-            {loading && <p>Extracting salary...</p>}
-          </div>
 
-          <div className="form-group">
-            <label>Upload Bills:</label>
-            <input
-              type="file"
-              onChange={(e) => handleFileUpload(e, "bills")}
-              accept=".jpg,.jpeg,.png,.pdf"
-            />
-          </div>
+        <button onClick={calculateSalary}>Calculate Salary %</button>
+        {loading && <span>Extracting salary...</span>}
 
-          <div className="button-group">
-            <button type="button" onClick={handleCalculate}>
-              Calculate
-            </button>
-            <button type="button" onClick={handleClear}>
-              Clear
-            </button>
-          </div>
-        </form>
-
-        <div className="results">
-          <h3>Results:</h3>
-          <p>Needs (50%): ${results.needs.toFixed(2)}</p>
-          <p>Savings (20%): ${results.savings.toFixed(2)}</p>
-          <p>Wants (30%): ${results.wants.toFixed(2)}</p>
+        <div className="salary-results">
+          <p>50% Needs: ${results.salary50.toFixed(2)}</p>
+          <p>20% Savings: ${results.salary20.toFixed(2)}</p>
+          <p>30% Wants: ${results.salary30.toFixed(2)}</p>
         </div>
       </div>
+
+      {/* =========================
+          NEEDS ROW
+      ========================= */}
+      <div className="row-section">
+        {Object.keys(needs).map((key) => (
+          <input
+            key={key}
+            type="number"
+            name={key}
+            value={needs[key]}
+            onChange={(e) => handleInputChange(e, "needs")}
+            placeholder={key.replace(/([A-Z])/g, " $1")}
+          />
+        ))}
+        <button onClick={() => calculateSection("needs")}>Calculate Needs</button>
+        <div className="result-msg">
+          <p>Total Needs: ${results.needsTotal.toFixed(2)} — {comparison.needs}</p>
+        </div>
+      </div>
+
+      {/* =========================
+          WANTS ROW
+      ========================= */}
+      <div className="row-section">
+        {Object.keys(wants).map((key) => (
+          <input
+            key={key}
+            type="number"
+            name={key}
+            value={wants[key]}
+            onChange={(e) => handleInputChange(e, "wants")}
+            placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+          />
+        ))}
+        <button onClick={() => calculateSection("wants")}>Calculate Wants</button>
+        <div className="result-msg">
+          <p>Total Wants: ${results.wantsTotal.toFixed(2)} — {comparison.wants}</p>
+        </div>
+      </div>
+
+      {/* =========================
+          SAVINGS ROW
+      ========================= */}
+      <div className="row-section">
+        {Object.keys(savings).map((key) => (
+          <input
+            key={key}
+            type="number"
+            name={key}
+            value={savings[key]}
+            onChange={(e) => handleInputChange(e, "savings")}
+            placeholder={key.replace(/([A-Z])/g, " $1")}
+          />
+        ))}
+        <button onClick={() => calculateSection("savings")}>Calculate Savings</button>
+        <div className="result-msg">
+          <p>Total Savings: ${results.savingsTotal.toFixed(2)} — {comparison.savings}</p>
+        </div>
+      </div>
+
     </div>
   );
 }
