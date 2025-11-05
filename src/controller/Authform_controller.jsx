@@ -1,9 +1,4 @@
-import { useState } from "react";
-
-
-
-
-
+// controller/authformcontroller.js
 export async function handleLogin(email, password, error, setError, navigate) {
   let hasError = false;
 
@@ -40,8 +35,8 @@ export async function handleLogin(email, password, error, setError, navigate) {
     console.log("Login response:", data);
 
     if (response.ok) {
-      // store user info in localStorage
-  localStorage.setItem("user", JSON.stringify({ email }));
+      // store both id & email
+      localStorage.setItem("user", JSON.stringify(data.user));
       navigate("/home", { replace: true });
     } else {
       setError((err) => ({ ...err, password: "Invalid email or password" }));
@@ -52,7 +47,7 @@ export async function handleLogin(email, password, error, setError, navigate) {
   }
 }
 
-// controller/Authform_signup_controller.jsx
+// ---------------------- SIGNUP ----------------------
 export async function handleSignup(
   e,
   signupEmail,
@@ -65,7 +60,6 @@ export async function handleSignup(
 
   let hasError = false;
 
-  // Email validation
   if (signupEmail.trim() === "") {
     setError((prev) => ({ ...prev, email: "Enter email address" }));
     hasError = true;
@@ -76,7 +70,6 @@ export async function handleSignup(
     setError((prev) => ({ ...prev, email: "" }));
   }
 
-  // Password validation
   if (signupPassword.trim() === "") {
     setError((prev) => ({ ...prev, password: "Enter password!" }));
     hasError = true;
@@ -98,7 +91,6 @@ export async function handleSignup(
 
   if (hasError) return;
 
-  // Signup API call to store user data in the backend
   try {
     const response = await fetch("http://localhost:5000/api/users", {
       method: "POST",
@@ -106,23 +98,20 @@ export async function handleSignup(
       body: JSON.stringify({ email: signupEmail, password: signupPassword }),
     });
 
+    const data = await response.json();
+    console.log("Signup response:", data);
 
-    const data = await response.json(); // The backend responds with JSON
-console.log("User signup response:", data);
-
-if (response.ok) {
-   localStorage.setItem("user", JSON.stringify({ email: signupEmail }));
-  navigate("/home", { replace: true }); // success
-} else if (response.status === 409) {
-  // Email already exists
-  setError((prev) => ({
-    ...prev,
-    email: "Email already exists. Want to sign in or use a different email?",
-  }));
-} else {
-  setError((prev) => ({ ...prev, email: "Error signing up!" }));
-}
-
+    if (response.ok) {
+      localStorage.setItem("user", JSON.stringify(data.user)); // includes id & email
+      navigate("/home", { replace: true });
+    } else if (response.status === 409) {
+      setError((prev) => ({
+        ...prev,
+        email: "Email already exists. Try signing in.",
+      }));
+    } else {
+      setError((prev) => ({ ...prev, email: "Error signing up!" }));
+    }
   } catch (err) {
     console.error("Signup error:", err);
     setError((prev) => ({ ...prev, email: "Error signing up!" }));

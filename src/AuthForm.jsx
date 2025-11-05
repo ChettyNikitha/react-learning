@@ -75,7 +75,7 @@ export default function AuthForm() {
                                     
                                      
                                     Login</button>
-                                {/* if don't have a account then user uses sign up form to create , so usestate islogin should be false */}
+                                {/* if don't have a account then user uses sign up form to  , so usestate islogin should be false */}
                                 <p>Not a Member?
                                     <a href="#" onClick={() => setIsLogin(false)}>SignUp now</a>
                                 </p>
