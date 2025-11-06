@@ -21,3 +21,21 @@ export const saveBudgetToDB = async (payload) => {
     alert("⚠️ Server error while saving results");
   }
 };
+
+export const fetchUserBudgets = async (userId) => {
+  try {
+    const response = await fetch(`http://localhost:5000/api/budget/user/${userId}`);
+    const data = await response.json();
+
+    if (response.ok) {
+      return data;
+    } else {
+      console.error("Failed to fetch user budgets:", data.message);
+      return [];
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return [];
+  }
+};
+

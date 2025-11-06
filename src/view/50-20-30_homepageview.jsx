@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../FiftyTwentyThirtyPage.css";
 import pieimage from "../assets/chart-50-30-20-budget.jpg";
 import * as Model from "../model/502030Model.jsx";
-import { saveBudgetToDB } from "../controller/savingresultscontroller.js";
+import { saveBudgetToDB, fetchUserBudgets } from "../controller/savingresultscontroller.js";
 
 export default function FiftyTwentyThirtyView() {
   const [salary, setSalary] = useState("");
@@ -46,6 +46,7 @@ export default function FiftyTwentyThirtyView() {
   });
 
   const [savingsMsg, setSavingsMsg] = useState("");
+  const [savedResults, setSavedResults] = useState([]);
 
   // =========================
   // Handlers
@@ -138,26 +139,39 @@ export default function FiftyTwentyThirtyView() {
   }, [results.needsTotal, results.wantsTotal, results.salary20]);
 
   // =========================
-  // Save Results (calls controller)
+  // Fetch saved results on mount
+  // =========================
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user && user.id) {
+      fetchUserBudgets(user.id).then((data) => setSavedResults(data));
+    }
+  }, []);
+
+  // =========================
+  // Save Results
   // =========================
   const handleSaveResults = async () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user || !user.id) {
-    alert("⚠️ Please log in first to save your results.");
-    return;
-  }
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user.id) {
+      alert("⚠️ Please log in first to save your results.");
+      return;
+    }
 
-  const payload = {
-    user_id: user.id,
-    salary,
-    needs: results.salary50,
-    wants: results.salary30,
-    savings: results.salary20,
+    const payload = {
+      user_id: user.id,
+      salary,
+      needs: results.salary50,
+      wants: results.salary30,
+      savings: results.salary20,
+    };
+
+    await saveBudgetToDB(payload);
+
+    // Fetch updated saved results
+    const updatedResults = await fetchUserBudgets(user.id);
+    setSavedResults(updatedResults);
   };
-
-  await saveBudgetToDB(payload);
-};
-results
 
   return (
     <div className="fifty-page" style={{ backgroundImage: `url(${pieimage})` }}>
@@ -171,123 +185,163 @@ results
         </p>
       </div>
 
-      <div className="row-section">
-        <input
-          type="number"
-          value={salary}
-          onChange={handleSalaryChange}
-          placeholder="Enter Salary"
-        />
-
-        <div className="file-upload-container">
-          <label className="custom-file-btn">
-            Upload Paystub
+      <div className="fifty-container">
+        <div className="fifty-left">
+          {/* Salary Section */}
+          <div className="row-section">
             <input
-              type="file"
-              onChange={handlePaystubUpload}
-              accept=".pdf,.txt,.jpg,.png"
+              type="number"
+              value={salary}
+              onChange={handleSalaryChange}
+              placeholder="Enter Salary"
             />
-          </label>
-          <span className="file-name">
-            {paystubFile ? paystubFile.name : "No file chosen"}
-          </span>
+
+            <div className="file-upload-container">
+              <label className="custom-file-btn">
+                Upload Paystub
+                <input
+                  type="file"
+                  onChange={handlePaystubUpload}
+                  accept=".pdf,.txt,.jpg,.png"
+                />
+              </label>
+              <span className="file-name">
+                {paystubFile ? paystubFile.name : "No file chosen"}
+              </span>
+            </div>
+
+            <button onClick={calculateSalary}>Calculate Salary %</button>
+            <button
+              onClick={() =>
+                Model.clearSalaryData({
+                  setSalary,
+                  setPaystubFile,
+                  setResults,
+                  setComparison,
+                  setNeeds,
+                  setWants,
+                  setSavings,
+                  setSavingsMsg,
+                })
+              }
+            >
+              Clear Salary
+            </button>
+
+            {loading && <span>Extracting salary...</span>}
+
+            <div className="salary-results">
+              <p>50% Needs: ${results.salary50.toFixed(2)}</p>
+              <p>30% Wants: ${results.salary30.toFixed(2)}</p>
+              <p>20% Savings: ${results.salary20.toFixed(2)}</p>
+              <p>
+                💰 Final Adjusted Savings:{" "}
+                <strong>${results.adjustedSavings.toFixed(2)}</strong>
+              </p>
+            </div>
+
+            <button onClick={handleSaveResults}>Save Results</button>
+          </div>
+
+          {/* Needs Section */}
+          <div className="row-section">
+            {Object.keys(needs).map((key) => (
+              <input
+                key={key}
+                type="number"
+                name={key}
+                value={needs[key]}
+                onChange={(e) => handleInputChange(e, "needs")}
+                placeholder={key.replace(/([A-Z])/g, " $1")}
+              />
+            ))}
+            <button onClick={() => calculateSection("needs")}>Calculate Needs</button>
+            <button onClick={() => clearSection("needs")}>Clear Needs</button>
+            <div className="result-msg">
+              <p>
+                Total Needs: ${results.needsTotal.toFixed(2)} — {comparison.needs}
+              </p>
+            </div>
+          </div>
+
+          {/* Wants Section */}
+          <div className="row-section">
+            {Object.keys(wants).map((key) => (
+              <input
+                key={key}
+                type="number"
+                name={key}
+                value={wants[key]}
+                onChange={(e) => handleInputChange(e, "wants")}
+                placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+              />
+            ))}
+            <button onClick={() => calculateSection("wants")}>Calculate Wants</button>
+            <button onClick={() => clearSection("wants")}>Clear Wants</button>
+            <div className="result-msg">
+              <p>
+                Total Wants: ${results.wantsTotal.toFixed(2)} — {comparison.wants}
+              </p>
+            </div>
+          </div>
+
+          {/* Savings Section */}
+          <div className="row-section">
+            {Object.keys(savings).map((key) => (
+              <input
+                key={key}
+                type="number"
+                name={key}
+                value={savings[key]}
+                onChange={(e) => handleInputChange(e, "savings")}
+                placeholder={key.replace(/([A-Z])/g, " $1")}
+              />
+            ))}
+            <button onClick={() => calculateSection("savings")}>Calculate Savings</button>
+            <button onClick={() => clearSection("savings")}>Clear Savings</button>
+            <div className="result-msg">
+              <p>
+                Total Savings Entered: ${results.savingsTotal.toFixed(2)} — {comparison.savings}
+              </p>
+              <p>{savingsMsg}</p>
+            </div>
+          </div>
         </div>
 
-        <button onClick={calculateSalary}>Calculate Salary %</button>
-        <button
-          onClick={() =>
-            Model.clearSalaryData({
-              setSalary,
-              setPaystubFile,
-              setResults,
-              setComparison,
-              setNeeds,
-              setWants,
-              setSavings,
-              setSavingsMsg,
-            })
-          }
-        >
-          Clear Salary
-        </button>
+        {/* Saved Results Section */}
+        {/* Saved Results Section */}
+<div className="fifty-right">
+  <div className="row-section saved-results-section">
+    <h2>📊 Your Savings</h2>
+    {savedResults.length === 0 ? (
+      <p>No saved results yet.</p>
+    ) : (
+      <table className="saved-results-table">
+        <thead>
+          <tr>
+            <th>Income</th>
+            {/* <th>Needs</th>
+            <th>Wants</th> */}
+            <th>Savings</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {savedResults.map((res, index) => (
+            <tr key={index}>
+              <td>${res.salary}</td>
+              {/* <td>${res.needs}</td>
+              <td>${res.wants}</td> */}
+              <td>${res.savings}</td>
+              <td>{new Date(res.created_at).toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+</div>
 
-        {loading && <span>Extracting salary...</span>}
-
-        <div className="salary-results">
-          <p>50% Needs: ${results.salary50.toFixed(2)}</p>
-          <p>30% Wants: ${results.salary30.toFixed(2)}</p>
-          <p>20% Savings: ${results.salary20.toFixed(2)}</p>
-          <p>
-            💰 Final Adjusted Savings:{" "}
-            <strong>${results.adjustedSavings.toFixed(2)}</strong>
-          </p>
-        </div>
-
-        <button onClick={handleSaveResults}>Save Results</button>
-      </div>
-
-      {/* ========================= NEEDS ========================= */}
-      <div className="row-section">
-        {Object.keys(needs).map((key) => (
-          <input
-            key={key}
-            type="number"
-            name={key}
-            value={needs[key]}
-            onChange={(e) => handleInputChange(e, "needs")}
-            placeholder={key.replace(/([A-Z])/g, " $1")}
-          />
-        ))}
-        <button onClick={() => calculateSection("needs")}>Calculate Needs</button>
-        <button onClick={() => clearSection("needs")}>Clear Needs</button>
-        <div className="result-msg">
-          <p>
-            Total Needs: ${results.needsTotal.toFixed(2)} — {comparison.needs}
-          </p>
-        </div>
-      </div>
-
-      {/* ========================= WANTS ========================= */}
-      <div className="row-section">
-        {Object.keys(wants).map((key) => (
-          <input
-            key={key}
-            type="number"
-            name={key}
-            value={wants[key]}
-            onChange={(e) => handleInputChange(e, "wants")}
-            placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-          />
-        ))}
-        <button onClick={() => calculateSection("wants")}>Calculate Wants</button>
-        <button onClick={() => clearSection("wants")}>Clear Wants</button>
-        <div className="result-msg">
-          <p>
-            Total Wants: ${results.wantsTotal.toFixed(2)} — {comparison.wants}
-          </p>
-        </div>
-      </div>
-
-      {/* ========================= SAVINGS ========================= */}
-      <div className="row-section">
-        {Object.keys(savings).map((key) => (
-          <input
-            key={key}
-            type="number"
-            name={key}
-            value={savings[key]}
-            onChange={(e) => handleInputChange(e, "savings")}
-            placeholder={key.replace(/([A-Z])/g, " $1")}
-          />
-        ))}
-        <button onClick={() => calculateSection("savings")}>Calculate Savings</button>
-        <button onClick={() => clearSection("savings")}>Clear Savings</button>
-        <div className="result-msg">
-          <p>
-            Total Savings Entered: ${results.savingsTotal.toFixed(2)} — {comparison.savings}
-          </p>
-          <p>{savingsMsg}</p>
-        </div>
       </div>
     </div>
   );

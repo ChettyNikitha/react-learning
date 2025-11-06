@@ -20,3 +20,16 @@ export const saveBudget = (req, res) => {
     res.status(200).json({ message: "✅ Budget saved successfully!" });
   });
 };
+// Fetch saved results for a user
+export const getUserBudgets = (req, res) => {
+  const { user_id } = req.params;
+
+  const sql = "SELECT * FROM budget_results WHERE user_id = ? ORDER BY id DESC LIMIT 5";
+  db.query(sql, [user_id], (err, results) => {
+    if (err) {
+      console.error("Error fetching budget results:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+    res.status(200).json(results);
+  });
+};
