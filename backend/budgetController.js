@@ -24,7 +24,7 @@ export const saveBudget = (req, res) => {
 export const getUserBudgets = (req, res) => {
   const { user_id } = req.params;
 
-  const sql = "SELECT * FROM budget_results WHERE user_id = ? ORDER BY id DESC LIMIT 5";
+  const sql = "SELECT * FROM budget_results WHERE user_id = ? ORDER BY id DESC LIMIT 12";
   db.query(sql, [user_id], (err, results) => {
     if (err) {
       console.error("Error fetching budget results:", err);
