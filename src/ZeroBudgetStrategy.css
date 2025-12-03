@@ -1,0 +1,38 @@
+/* Row inputs side by side */
+.pyf-row-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.pyf-row-input {
+  flex: 1 1 30%; /* 3 inputs per row */
+  display: flex;
+  flex-direction: column;
+}
+
+.pyf-row-input label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.pyf-row-input input {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+.pyf-btn {
+  width: 120px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #0047ab;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pyf-btn:hover {
+  background-color: #003580;
+}
